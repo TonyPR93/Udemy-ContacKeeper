@@ -1,7 +1,10 @@
 const express = require("express"); //on appel express
+const connectDB = require("./config/db");
 
 const app = express();
 
+//Connect database
+connectDB();
 app.get("/", (req, res) => res.send("Hello world"));
 
 //Les routes
