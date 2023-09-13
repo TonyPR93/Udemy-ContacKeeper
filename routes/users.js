@@ -7,7 +7,12 @@ const User = require("../models/Users");
 //Express-validatoir
 const { check, validationResult } = require("express-validator");
 
+//Crypt
 const bcrypt = require("bcryptjs");
+
+//JWT
+const jwt = require("jsonwebtoken");
+const config = require("config");
 //Sert a poster (add qqch)
 // @ROUTE   POST api/users
 // @desc    Register a user
@@ -53,7 +58,23 @@ router.post(
 
       await user.save(); //On attend que l'utilisateur soit enregistré
 
-      res.send("User saved");
+      const payload = {
+        user: {
+          id: user.id,
+        },
+      };
+
+      jwt.sign(
+        payload,
+        config.get("jwtSecret"),
+        {
+          expiresIn: 360000,
+        },
+        (err, token) => {
+          if (err) throw err;
+          res.json({ token });
+        },
+      );
     } catch (err) {
       console.error(err.message);
       res.status(500).send("Server error");
