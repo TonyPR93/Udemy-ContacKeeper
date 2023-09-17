@@ -4,6 +4,7 @@ import { Navbar } from "./components/layout/Navbar";
 import { Home } from "./components/pages/Home";
 import { About } from "./components/pages/About";
 import { Register } from "./components/auth/Register";
+import { Login } from "./components/auth/Login";
 
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
@@ -22,6 +23,7 @@ const App = () => {
                 <Route path="/" Component={Home} />
                 <Route path="/about" Component={About} />
                 <Route path="/register" Component={Register} />
+                <Route path="/login" Component={Login} />
               </Routes>
             </div>
           </Fragment>
