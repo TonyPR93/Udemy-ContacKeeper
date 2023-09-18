@@ -1,33 +1,55 @@
-import React, { useContext, useState } from "react";
-import AlertContext from "../../context/alert/alertContext";
+import React, { useContext, useEffect, useState } from "react";
+import AlertContext from "../../context/alert/alertContext"; //On apporte le context pour les alertes
+import AuthContext from "../../context/auth/authContext"; //Et pour auth
 
 export const Register = () => {
-  const alertContext = useContext(AlertContext);
-  const { setAlert } = alertContext;
+  const alertContext = useContext(AlertContext); //declaration des context
+  const authContext = useContext(AuthContext);
+
+  const { setAlert } = alertContext; //destructuration des contexts
+  const { register, error, clearErrors } = authContext;
+
+  useEffect(() => {
+    //Cycle component
+    if (error === "User already exists") {
+      setAlert(error, "danger");
+      clearErrors();
+    }
+  }, [error]);
 
   const [user, setUser] = useState({
+    //la state et son setter
     name: "",
     email: "",
     password: "",
     password2: "",
   });
 
-  const { name, email, password, password2 } = user;
+  const { name, email, password, password2 } = user; //destructuration de user
 
-  const onChange = (e) =>
+  const onChange = (
+    e, //On change
+  ) =>
     setUser({
       ...user,
       [e.target.name]: e.target.value,
     });
 
   const onSubmit = (e) => {
-    e.preventDefault();
+    e.preventDefault(); //On retient le submit
     if (name === "" || email === "" || password === "") {
+      //On lance les erreurs en cas de champs vides
       setAlert("Please enter all fields", "danger");
     } else if (password !== password2) {
+      // Et en cas de fail check password
       setAlert("Passwords do not match", "danger");
     } else {
-      console.log("ok submit");
+      register({
+        //sinon on fait appel a la méthoderegister de authcontext
+        name,
+        email,
+        password,
+      });
     }
   };
 
