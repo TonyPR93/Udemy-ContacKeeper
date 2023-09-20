@@ -2,12 +2,13 @@ import React, { useContext, useEffect, useState } from "react";
 import AlertContext from "../../context/alert/alertContext"; //On apporte le context pour les alertes
 import AuthContext from "../../context/auth/authContext"; //Et pour auth
 
+import { Navigate } from "react-router-dom"; //react v6
 export const Register = () => {
   const alertContext = useContext(AlertContext); //declaration des context
   const authContext = useContext(AuthContext);
 
   const { setAlert } = alertContext; //destructuration des contexts
-  const { register, error, clearErrors } = authContext;
+  const { register, error, clearErrors, isAuthenticated } = authContext;
 
   useEffect(() => {
     //Cycle component
@@ -15,7 +16,7 @@ export const Register = () => {
       setAlert(error, "danger");
       clearErrors();
     }
-  }, [error]);
+  }, [error, isAuthenticated]);
 
   const [user, setUser] = useState({
     //la state et son setter
@@ -27,9 +28,7 @@ export const Register = () => {
 
   const { name, email, password, password2 } = user; //destructuration de user
 
-  const onChange = (
-    e, //On change
-  ) =>
+  const onChange = (e) =>
     setUser({
       ...user,
       [e.target.name]: e.target.value,
@@ -52,7 +51,7 @@ export const Register = () => {
       });
     }
   };
-
+  if (isAuthenticated) return <Navigate to="/" />;
   return (
     <div className="form-container">
       <h1>
