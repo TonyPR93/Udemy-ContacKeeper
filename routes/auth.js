@@ -74,6 +74,7 @@ router.post(
       };
 
       jwt.sign(
+        //Quand on recoit un post on definit un token 'Register'
         payload,
         config.get("jwtSecret"),
         {
@@ -81,7 +82,7 @@ router.post(
         },
         (err, token) => {
           if (err) throw err;
-          res.json({ token });
+          res.json({ token }); //Le token renvoyé
         },
       );
     } catch (err) {
