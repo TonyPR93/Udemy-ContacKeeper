@@ -1,22 +1,22 @@
 import React, { useContext, useEffect, useState } from "react";
 import AlertContext from "../../context/alert/alertContext"; //On apporte le context pour les alertes
-import AuthContext from "../../context/auth/authContext"; //Et pour auth
+import { useAuth, clearErrors, register } from "../../context/auth/AuthState";
 
 import { Navigate } from "react-router-dom"; //react v6
-export const Register = () => {
-  const alertContext = useContext(AlertContext); //declaration des context
-  const authContext = useContext(AuthContext);
+export const Register = (props) => {
+  const alertContext = useContext(AlertContext);
+  const [authState, authDispatch] = useAuth();
+  const { error, isAuthenticated } = authState;
 
-  const { setAlert } = alertContext; //destructuration des contexts
-  const { register, error, clearErrors, isAuthenticated } = authContext;
+  const { setAlert } = alertContext;
 
   useEffect(() => {
     //Cycle component
     if (error === "User already exists") {
       setAlert(error, "danger");
-      clearErrors();
+      clearErrors(authDispatch);
     }
-  }, [error, isAuthenticated]);
+  }, [error, isAuthenticated, props.history, setAlert, authDispatch]);
 
   const [user, setUser] = useState({
     //la state et son setter
@@ -43,7 +43,7 @@ export const Register = () => {
       // Et en cas de fail check password
       setAlert("Passwords do not match", "danger");
     } else {
-      register({
+      register(authDispatch, {
         //sinon on fait appel a la méthoderegister de authcontext
         name,
         email,
@@ -61,6 +61,7 @@ export const Register = () => {
         <div className="form-group">
           <label htmlFor="name">Name</label>
           <input
+            id="name"
             type="text"
             name="name"
             value={name}
@@ -71,6 +72,7 @@ export const Register = () => {
         <div className="form-group">
           <label htmlFor="email">Email</label>
           <input
+            id="email"
             type="email"
             name="email"
             value={email}
@@ -81,6 +83,7 @@ export const Register = () => {
         <div className="form-group">
           <label htmlFor="password">Password</label>
           <input
+            id="password"
             type="password"
             name="password"
             value={password}
@@ -92,6 +95,7 @@ export const Register = () => {
         <div className="form-group">
           <label htmlFor="password2">Confirm Password</label>
           <input
+            id="password2"
             type="password"
             name="password2"
             value={password2}

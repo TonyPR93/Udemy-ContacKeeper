@@ -20,7 +20,6 @@ export const ContactFilter = () => {
       clearFilter();
     }
   };
-  console.log(filtered);
   return (
     <form>
       <input
