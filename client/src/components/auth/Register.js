@@ -1,9 +1,14 @@
-import React, { useContext, useEffect, useState } from "react";
-import AlertContext from "../../context/alert/alertContext"; //On apporte le context pour les alertes
-import { useAuth, clearErrors, register } from "../../context/auth/AuthState";
+import React, { useState, useContext, useEffect } from "react";
+import { Navigate } from "react-router-dom";
+import AlertContext from "../../context/alert/alertContext";
+import {
+  useAuth,
+  clearErrors,
+  register,
+  loadUser,
+} from "../../context/auth/AuthState";
 
-import { Navigate } from "react-router-dom"; //react v6
-export const Register = (props) => {
+const Register = (props) => {
   const alertContext = useContext(AlertContext);
   const [authState, authDispatch] = useAuth();
   const { error, isAuthenticated } = authState;
@@ -11,7 +16,6 @@ export const Register = (props) => {
   const { setAlert } = alertContext;
 
   useEffect(() => {
-    //Cycle component
     if (error === "User already exists") {
       setAlert(error, "danger");
       clearErrors(authDispatch);
@@ -19,39 +23,33 @@ export const Register = (props) => {
   }, [error, isAuthenticated, props.history, setAlert, authDispatch]);
 
   const [user, setUser] = useState({
-    //la state et son setter
     name: "",
     email: "",
     password: "",
     password2: "",
   });
 
-  const { name, email, password, password2 } = user; //destructuration de user
+  const { name, email, password, password2 } = user;
 
-  const onChange = (e) =>
-    setUser({
-      ...user,
-      [e.target.name]: e.target.value,
-    });
+  const onChange = (e) => setUser({ ...user, [e.target.name]: e.target.value });
 
   const onSubmit = (e) => {
-    e.preventDefault(); //On retient le submit
+    e.preventDefault();
     if (name === "" || email === "" || password === "") {
-      //On lance les erreurs en cas de champs vides
       setAlert("Please enter all fields", "danger");
     } else if (password !== password2) {
-      // Et en cas de fail check password
       setAlert("Passwords do not match", "danger");
     } else {
       register(authDispatch, {
-        //sinon on fait appel a la méthoderegister de authcontext
         name,
         email,
         password,
       });
     }
   };
+
   if (isAuthenticated) return <Navigate to="/" />;
+
   return (
     <div className="form-container">
       <h1>
@@ -70,7 +68,7 @@ export const Register = (props) => {
           />
         </div>
         <div className="form-group">
-          <label htmlFor="email">Email</label>
+          <label htmlFor="email">Email Address</label>
           <input
             id="email"
             type="email"
@@ -108,9 +106,10 @@ export const Register = (props) => {
           type="submit"
           value="Register"
           className="btn btn-primary btn-block"
-          // onSubmit={onSubmit} On ne met pas le onsubmit ici sinon ca ne catch pas le FORM !!!!
         />
       </form>
     </div>
   );
 };
+
+export default Register;

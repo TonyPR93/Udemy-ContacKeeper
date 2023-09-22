@@ -1,111 +1,119 @@
-import React, { useReducer, useEffect, useContext } from "react";
-import AuthReducer from "./authReducer";
-import AuthContext from "./authContext";
+import React, { useReducer, useContext, useEffect } from "react";
 import axios from "axios";
+import AuthContext from "./authContext";
+import authReducer from "./authReducer";
 import setAuthToken from "../../utils/setAuthToken";
 import {
   REGISTER_SUCCESS,
+  REGISTER_FAIL,
   USER_LOADED,
+  AUTH_ERROR,
   LOGIN_SUCCESS,
+  LOGIN_FAIL,
   LOGOUT,
   CLEAR_ERRORS,
-  REGISTER_FAIL,
-  LOGIN_FAIL,
-  AUTH_ERROR,
 } from "../types";
+
+// Create a custom hook to use the auth context
+
 export const useAuth = () => {
   const { state, dispatch } = useContext(AuthContext);
   return [state, dispatch];
 };
-//Load User
-export const loadUser = async (dispatch) => {
-  const tokenAuth = localStorage.getItem("token");
-  const config = {
-    headers: {
-      "Content-type": "application/json",
-      "x-auth-token": tokenAuth,
-    },
-  };
 
+// Action creators
+// NOTE: These could be moved to a separate file like in redux
+// but they remain here for ease of students transitioning
+
+// Load User
+export const loadUser = async (dispatch) => {
   try {
-    const res = await axios.get("/api/auth", config);
+    const res = await axios.get("/api/auth");
+
     dispatch({
       type: USER_LOADED,
       payload: res.data,
     });
-  } catch (error) {
-    dispatch({
-      type: AUTH_ERROR,
-    });
+  } catch (err) {
+    dispatch({ type: AUTH_ERROR });
   }
 };
 
-//Login User
-export const login = async (dispatch, formData) => {
-  loadUser(dispatch);
-  try {
-    const res = await axios.post("/api/auth", formData);
-    dispatch({
-      type: LOGIN_SUCCESS,
-      payload: res.data,
-    });
-  } catch (error) {
-    dispatch({
-      type: LOGIN_FAIL,
-      payload: error.response.data.msg,
-    });
-  }
-};
-
-//Register User
+// Register User
 export const register = async (dispatch, formData) => {
-  loadUser(dispatch);
-
   try {
     const res = await axios.post("/api/users", formData);
     dispatch({
       type: REGISTER_SUCCESS,
       payload: res.data,
     });
-  } catch (error) {
+  } catch (err) {
     dispatch({
       type: REGISTER_FAIL,
-      payload: error.response.data.msg,
+      payload: err.response.data.msg,
     });
   }
 };
 
-//Logout
+// Login User
+export const login = async (dispatch, formData) => {
+  try {
+    const res = await axios.post("/api/auth", formData);
+
+    dispatch({
+      type: LOGIN_SUCCESS,
+      payload: res.data,
+    });
+  } catch (err) {
+    dispatch({
+      type: LOGIN_FAIL,
+      payload: err.response.data.msg,
+    });
+  }
+};
+
+// Logout
 export const logout = (dispatch) => {
-  dispatch({
-    type: LOGOUT,
-  });
+  dispatch({ type: LOGOUT });
 };
-//Clear Errors
-export const clearErrors = (dispatch) => {
-  dispatch({ type: CLEAR_ERRORS });
-};
-const AuthState = ({ children }) => {
+
+// Clear Errors
+export const clearErrors = (dispatch) => dispatch({ type: CLEAR_ERRORS });
+
+// AuthState Provider Component
+
+const AuthState = (props) => {
   const initialState = {
     token: localStorage.getItem("token"),
     isAuthenticated: null,
     loading: true,
-    error: null,
     user: null,
+    error: null,
   };
-  const [state, dispatch] = useReducer(AuthReducer, initialState);
-  const { token, loading } = state;
-  setAuthToken(token);
-  if (loading) {
-    loadUser(dispatch);
+
+  const [state, dispatch] = useReducer(authReducer, initialState);
+
+  // set token on initial app loading
+  console.log(state.token);
+  setAuthToken(state.token);
+
+  // load user on first run or refresh
+  if (state.loading) {
+    console.log("1st try");
   }
+
+  // 'watch' state.token and set headers and local storage on any change
   useEffect(() => {
-    setAuthToken(token);
-  }, [token]);
+    console.log("useEffect try");
+    setAuthToken(state.token);
+    loadUser(dispatch);
+  }, [state.token]);
+
   return (
     <AuthContext.Provider value={{ state: state, dispatch }}>
-      {children}
+      {props.children}
     </AuthContext.Provider>
   );
 };
+
 export default AuthState;
