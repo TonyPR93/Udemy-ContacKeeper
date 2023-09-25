@@ -15,15 +15,10 @@ import {
 } from "../types";
 
 // Create a custom hook to use the auth context
-
 export const useAuth = () => {
   const { state, dispatch } = useContext(AuthContext);
   return [state, dispatch];
 };
-
-// Action creators
-// NOTE: These could be moved to a separate file like in redux
-// but they remain here for ease of students transitioning
 
 // Load User
 export const loadUser = async (dispatch) => {
@@ -81,7 +76,6 @@ export const logout = (dispatch) => {
 export const clearErrors = (dispatch) => dispatch({ type: CLEAR_ERRORS });
 
 // AuthState Provider Component
-
 const AuthState = (props) => {
   const initialState = {
     token: localStorage.getItem("token"),

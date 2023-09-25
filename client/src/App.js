@@ -6,17 +6,13 @@ import { About } from "./components/pages/About";
 import Register from "./components/auth/Register";
 import { Login } from "./components/auth/Login";
 import { Alerts } from "./components/layout/Alerts";
+import PrivateRoute from "./components/routing/PrivateRoute";
 
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 import ContactState from "./context/contact/ContactState";
 import AuthState from "./context/auth/AuthState";
 import AlertState from "./context/alert/AlertState";
-import setAuthToken from "./utils/setAuthToken";
-
-if (localStorage.token) {
-  setAuthToken(localStorage.token);
-}
 
 const App = () => {
   return (
@@ -29,10 +25,10 @@ const App = () => {
               <div className="container">
                 <Alerts />
                 <Routes>
-                  <Route path="/" Component={Home} />
-                  <Route path="/about" Component={About} />
-                  <Route path="/register" Component={Register} />
-                  <Route path="/login" Component={Login} />
+                  <Route path="/" element={<PrivateRoute component={Home} />} />
+                  <Route path="about" element={<About />} />
+                  <Route path="register" element={<Register />} />
+                  <Route path="login" element={<Login />} />
                 </Routes>
               </div>
             </Fragment>
