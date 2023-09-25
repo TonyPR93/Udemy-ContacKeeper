@@ -1,16 +1,21 @@
-import React, { useContext } from "react";
+import React from "react";
 import PropTypes from "prop-types";
-import ContactContext from "../../context/contact/contactContext";
+import {
+  useContacts,
+  deleteContact,
+  setCurrent,
+  clearCurrent,
+} from "../../context/contact/ContactState";
 
 export const ContactItem = ({ contact }) => {
-  const contactContext = useContext(ContactContext);
-  const { deleteContact, setCurrent, clearCurrent } = contactContext;
-  const { id, name, email, phone, type } = contact;
+  // we just need the contact dispatch without state.
+  const contactDispatch = useContacts()[1];
+
+  const { _id, name, email, phone, type } = contact;
 
   const onDelete = () => {
-    console.log(id);
-    deleteContact(id);
-    clearCurrent();
+    deleteContact(contactDispatch, _id);
+    clearCurrent(contactDispatch);
   };
 
   return (
@@ -30,19 +35,19 @@ export const ContactItem = ({ contact }) => {
       <ul className="list">
         {email && (
           <li>
-            <i className="fas fa-envelope-open"></i> {email}
+            <i className="fas fa-envelope-open" /> {email}
           </li>
         )}
         {phone && (
           <li>
-            <i className="fas fa-phone"></i> {phone}
+            <i className="fas fa-phone" /> {phone}
           </li>
         )}
       </ul>
       <p>
         <button
           className="btn btn-dark btn-sm"
-          onClick={() => setCurrent(contact)}
+          onClick={() => setCurrent(contactDispatch, contact)}
         >
           Edit
         </button>
