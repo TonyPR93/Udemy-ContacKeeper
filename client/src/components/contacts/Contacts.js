@@ -24,7 +24,7 @@ export const Contacts = () => {
       clearErrorsContact(contactDispatch); //On clears les erreurs de l'utilisateur, comme ca elle ne s'affiche qu'une fois
     }
     getContacts(contactDispatch);
-  }, [contactDispatch, setAlert, contactDispatch, error]);
+  }, [contactDispatch, setAlert, error]);
   console.log(error);
   console.log("contact" + contacts);
   if (contacts !== null && contacts.length === 0) {
