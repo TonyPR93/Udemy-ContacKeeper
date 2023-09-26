@@ -38,9 +38,16 @@ export const ContactForm = () => {
     e.preventDefault();
     console.log(filteredState);
     if (current === null) {
-      addContact(contactDispatch, contact).then(() =>
-        setContact(initialContact),
-      );
+      console.log("adding");
+      console.log(filteredState);
+      if (filteredState === null) {
+        addContact(contactDispatch, contact);
+      } else {
+        addContact(contactDispatch, contact).then(() =>
+          filterContacts(contactDispatch, filteredState),
+        );
+      }
+      setContact(initialContact);
     } else {
       if (filteredState !== null) {
         updateContact(contactDispatch, contact).then(() =>
