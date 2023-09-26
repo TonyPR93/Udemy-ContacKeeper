@@ -11,7 +11,7 @@ import AlertContext from "../../context/alert/alertContext";
 
 export const Contacts = () => {
   const [contactState, contactDispatch] = useContacts();
-  const { contacts, filtered, error } = contactState;
+  const { contacts, filtered, error, filteredState } = contactState;
 
   const alertContext = useContext(AlertContext);
   const { setAlert } = alertContext;
@@ -27,15 +27,29 @@ export const Contacts = () => {
   }, [contactDispatch, setAlert, error]);
   console.log(error);
   console.log("contact" + contacts);
-  if (contacts !== null && contacts.length === 0) {
+
+  if (filtered === null) {
+    if (contacts !== null && contacts.length === 0) {
+      return (
+        <TransitionGroup>
+          <CSSTransition key="0" timeout={750} classNames="item">
+            <h4 className="text-center">Please add contacts</h4>
+          </CSSTransition>
+        </TransitionGroup>
+      );
+    }
+  } else if (contacts !== null && Object.keys(filtered).length === 0) {
     return (
       <TransitionGroup>
         <CSSTransition key="0" timeout={750} classNames="item">
-          <h4 className="text-center">Please add contacts</h4>
+          <h4 className="text-center">
+            Contacts with such name or email doesn't exist
+          </h4>
         </CSSTransition>
       </TransitionGroup>
     );
   }
+
   console.log("filtered " + filtered);
   return (
     <Fragment>
