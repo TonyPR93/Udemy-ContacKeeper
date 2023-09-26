@@ -44,6 +44,7 @@ export default (state, action) => {
         ...state,
         contacts: null,
         filtered: null,
+        filteredState: null,
         error: null,
         current: null,
       };
@@ -64,11 +65,13 @@ export default (state, action) => {
           const regex = new RegExp(`${action.payload}`, "gi");
           return contact.name.match(regex) || contact.email.match(regex);
         }),
+        filteredState: action.payload,
       };
     case CLEAR_FILTER:
       return {
         ...state,
         filtered: null,
+        filteredState: null,
       };
     case CONTACT_ERROR:
       return {

@@ -4,6 +4,7 @@ import {
   useContacts,
   updateContact,
   clearCurrent,
+  filterContacts,
 } from "../../context/contact/ContactState";
 
 const initialContact = {
@@ -16,7 +17,7 @@ const initialContact = {
 export const ContactForm = () => {
   const [contactState, contactDispatch] = useContacts();
 
-  const { current } = contactState;
+  const { current, filteredState } = contactState;
 
   const [contact, setContact] = useState(initialContact);
 
@@ -35,12 +36,19 @@ export const ContactForm = () => {
 
   const onSubmit = (e) => {
     e.preventDefault();
+    console.log(filteredState);
     if (current === null) {
       addContact(contactDispatch, contact).then(() =>
         setContact(initialContact),
       );
     } else {
-      updateContact(contactDispatch, contact);
+      if (filteredState !== null) {
+        updateContact(contactDispatch, contact).then(() =>
+          filterContacts(contactDispatch, filteredState),
+        );
+      } else {
+        updateContact(contactDispatch, contact);
+      }
     }
     clearAll();
   };

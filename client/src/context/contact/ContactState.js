@@ -130,6 +130,7 @@ const ContactState = (props) => {
     contacts: null,
     current: null,
     filtered: null,
+    filteredState: null,
     error: null,
   };
 
