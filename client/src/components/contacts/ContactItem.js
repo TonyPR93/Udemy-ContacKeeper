@@ -5,17 +5,27 @@ import {
   deleteContact,
   setCurrent,
   clearCurrent,
+  filterContacts,
 } from "../../context/contact/ContactState";
 
 export const ContactItem = ({ contact }) => {
   // we just need the contact dispatch without state.
-  const contactDispatch = useContacts()[1];
+  const [contactState, contactDispatch] = useContacts();
+
+  const { filteredState } = contactState;
 
   const { _id, name, email, phone, type } = contact;
 
   const onDelete = () => {
-    deleteContact(contactDispatch, _id);
-    clearCurrent(contactDispatch);
+    if (filteredState !== null) {
+      deleteContact(contactDispatch, _id).then(() =>
+        filterContacts(contactDispatch, filteredState),
+      );
+      clearCurrent(contactDispatch);
+    } else {
+      deleteContact(contactDispatch, _id);
+      clearCurrent(contactDispatch);
+    }
   };
 
   return (
